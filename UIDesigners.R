@@ -5,6 +5,7 @@ URI = 'mongodb://127.0.0.1:27017'
 
 clean_data <- mongo('zcool', url = URI, collection = 'clean_data')
 
+# 一线二线城市变量
 UIDesigners <- clean_data$find('{"job": "UI设计师"}')
 UIShangHai <- clean_data$find('{"job": "UI设计师", "livenow.0": "上海"}')
 UIBeijing <- clean_data$find('{"job": "UI设计师", "livenow.0": "北京"}')
@@ -13,6 +14,11 @@ UIGuangzhou <- clean_data$find('{"job": "UI设计师", "livenow.1": "广州"}')
 UIShenzhen <- clean_data$find('{"job": "UI设计师", "livenow.1": "深圳"}')
 UICityNo1 <- clean_data$find('{"livenow.1":{"$in": ["上海市", "北京市","天津市", "广州", "深圳"]} , "job": "UI设计师"}')
 UICityNo2 <- clean_data$find('{"livenow.1":{"$in": ["杭州", "南京","济南", "重庆", "青岛", "大连", "宁波", "厦门"]} , "job": "UI设计师"}')
+
+# 根据工作种类和城市名称筛选表
+JobCityFromMongo <- function(job, city_name){
+  clean_data$find(sprintf('{"job": "%s", "livenow.1": "%s"}', job, city_name))
+}
 
 male_ana <- ggplot(UIDesigners, aes(x=UIDesigners$male)) +
   geom_bar() +
@@ -33,7 +39,6 @@ ggplot(UIDesigners, aes(x=UIDesigners$stastic$fans, y=UIDesigners$stastic$hot)) 
   geom_smooth(method = lm) +
   labs(x="粉丝数", y='人气值', title="设计师粉丝数和人气值") + 
   theme(text = element_text(family = 'Wawati SC', size = 10), plot.title = element_text(hjust = 0.5))
-
 
 # 分组计算一线城市的加权平均值
 ShanghaiPercent <- nrow(UIShangHai)/nrow(UICityNo1)
@@ -57,14 +62,31 @@ print(BeijingHotSum * BeijingPercent)
 print(c(ShanghaiHotSum, BeijingHotSum, ShanghaiPercent, BeijingPercent))
 
 # 分组计算二线城市加权平均值
-subset(UICityNo2, livenow==c('江苏', '南京'), select = c("job"))
+UIHangzhou  <- JobCityFromMongo('UI设计师', '杭州')
+UINanjing   <- JobCityFromMongo('UI设计师', '南京')
+UIJinan     <- JobCityFromMongo('UI设计师', '济南')
+UIChongqing <- JobCityFromMongo('UI设计师', '重庆市')
+UIQingdao   <- JobCityFromMongo('UI设计师', '青岛')
+UIDalian    <- JobCityFromMongo('UI设计师', '大连')
+UINingbo    <- JobCityFromMongo('UI设计师', '宁波')
+UIXiamen    <- JobCityFromMongo('UI设计师', '厦门')
 
-print(class(UICityNo2$livenow))
+GroupWeightedMean <- function(...){
+  args_list <- list(...);
+  args_len <- length(args_list);
+  verctor_percent <- c();
+  verctor_weightmean <- c();
+  for(i in 1:args_len){
+    percent_city <- nrow(args_list[[i]])/nrow(UICityNo2);
+    verctor_percent[i] <- percent_city;
+    weightmean_city <- mean(args_list[[i]]$stastic$hot);
+    verctor_weightmean[i] <- weightmean_city;
+    
+  }
+  return(weighted.mean(verctor_weightmean, verctor_percent));
+}
 
-
-UInanjing <- UICityNo2[UICityNo2$livenow == c('江苏', '南京'), ]
-
-
+GroupWeightedMean(UIHangzhou, UINanjing, UIJinan, UIChongqing, UIQingdao, UIDalian, UINingbo, UIXiamen)
 
 
 
