@@ -34,11 +34,12 @@ weighted.mean(UICityNo2$stastic$hot)
 weighted.mean(UICityNo2$stastic$fans)
 weighted.mean(UICityNo2$stastic$work_total)
 
-ggplot(UIDesigners, aes(x=UIDesigners$stastic$fans, y=UIDesigners$stastic$hot)) + 
+ggplot(UIDesigners, aes(x=UIDesigners$stastic$fans, y=UIDesigners$stastic$work_total)) + 
   geom_point() +
+  geom_text(aes(label=ifelse(stastic$fans>30000, as.character(username), "")), hjust=0, vjust=0) +
   geom_smooth(method = lm) +
   labs(x="粉丝数", y='人气值', title="设计师粉丝数和人气值") + 
-  theme(text = element_text(family = 'Wawati SC', size = 10), plot.title = element_text(hjust = 0.5))
+  theme(text = element_text(family = 'Hei', size = 10), plot.title = element_text(hjust = 0.5))
 
 # 分组计算一线城市的加权平均值
 ShanghaiPercent <- nrow(UIShangHai)/nrow(UICityNo1)
@@ -55,11 +56,6 @@ ShenzhenHotMean <- mean(UIShenzhen$stastic$hot)
 
 weighted.mean(c(ShanghaiHotMean, BeijingHotMean, TianjinHotMean, GuangzhouHotMean, ShenzhenHotMean), 
               c(ShanghaiPercent, BeijingPercent, TianjinPercent, GuangzhouPercent, ShenzhenPercent))
-
-print(ShanghaiHotSum * ShanghaiPercent)
-print(BeijingHotSum * BeijingPercent)
-
-print(c(ShanghaiHotSum, BeijingHotSum, ShanghaiPercent, BeijingPercent))
 
 # 分组计算二线城市加权平均值
 UIHangzhou  <- JobCityFromMongo('UI设计师', '杭州')
