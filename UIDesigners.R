@@ -1,5 +1,7 @@
 library(mongolite)
 library(ggplot2)
+library(jiebaRD)
+library(jiebaR)
 
 URI = 'mongodb://127.0.0.1:27017'
 
@@ -100,9 +102,6 @@ ggplot(UIDesigners, aes(x=UIDesigners$stastic$work_total, y=UIDesigners$stastic$
 subset(UIDesigners, stastic$hot>1000000 & educated != NaN, select = c('educated', 'username'))
 
 
-
-library(jiebaRD)
-library(jiebaR)
 wk = worker()
 wk["我觉得楼栋数据相关的工作我也可以，哈哈哈哈"]
 
