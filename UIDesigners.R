@@ -85,9 +85,26 @@ GroupWeightedMean <- function(...){
 GroupWeightedMean(UIHangzhou, UINanjing, UIJinan, UIChongqing, UIQingdao, UIDalian, UINingbo, UIXiamen)
 
 
+# 
+ggplot(UIDesigners, aes(x=UIDesigners$stastic$work_total, y=UIDesigners$stastic$hot)) + 
+  geom_point() +
+  geom_text(aes(label=ifelse(stastic$fans>30000, as.character(username), "")), hjust=0, vjust=0) +
+  geom_smooth(method = lm) + 
+  xlim(0, 100) +
+  ylim(0, 100000) +
+  labs(x="作品数", y='人气值', title="UI设计师作品和人气值关系") + 
+  theme(text = element_text(family = 'Hei', size = 10), plot.title = element_text(hjust = 0.5))
+
+
+# 院校和人气值的关系
+subset(UIDesigners, stastic$hot>1000000 & educated != NaN, select = c('educated', 'username'))
 
 
 
+library(jiebaRD)
+library(jiebaR)
+wk = worker()
+wk["我觉得楼栋数据相关的工作我也可以，哈哈哈哈"]
 
 
 
