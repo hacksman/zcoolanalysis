@@ -103,7 +103,27 @@ subset(UIDesigners, stastic$hot>1000000 & educated != NaN, select = c('educated'
 
 
 wk = worker()
-wk["我觉得楼栋数据相关的工作我也可以，哈哈哈哈"]
+sign_txt <- as.character(subset(UIDesigners, sign != NaN, select = "sign"))
+
+sign_slice_words <- wk[sign_txt]
+
+sign_slice_words <- sign_slice_words[nchar(sign_slice_words)>1]
+
+sign_slice_words <- table(sign_slice_words)
+
+sign_slice_words <- sort(sign_slice_words, decreasing = TRUE)[1:100]
+
+
+library(wordcloud)
+
+bmp("aa.jpg", width = 500, height = 500)
+par(bg = "black")
+
+wordcloud(names(sign_slice_words), sign_slice_words, colors = rainbow(100), random.order=F)
+dev.off()
+
+length(sign_slice_words)
+
 
 
 
