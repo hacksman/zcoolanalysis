@@ -2,6 +2,8 @@ library(mongolite)
 library(ggplot2)
 library(jiebaRD)
 library(jiebaR)
+library(wordcloud)
+library(wordcloud2)
 
 URI = 'mongodb://127.0.0.1:27017'
 
@@ -38,10 +40,10 @@ weighted.mean(UICityNo2$stastic$work_total)
 
 ggplot(UIDesigners, aes(x=UIDesigners$stastic$fans, y=UIDesigners$stastic$work_total)) + 
   geom_point() +
-  geom_text(aes(label=ifelse(stastic$fans>30000, as.character(username), "")), hjust=0, vjust=0) +
+  geom_text(aes(label=ifelse(stastic$fans>20000, as.character(username), ""), family = 'PingFang SC'), size=2,hjust=0, vjust=-1) +
   geom_smooth(method = lm) +
   labs(x="粉丝数", y='人气值', title="设计师粉丝数和人气值") + 
-  theme(text = element_text(family = 'Hei', size = 10), plot.title = element_text(hjust = 0.5))
+  theme(text = element_text(family = 'PingFang SC'))
 
 # 分组计算一线城市的加权平均值
 ShanghaiPercent <- nrow(UIShangHai)/nrow(UICityNo1)
@@ -101,8 +103,8 @@ ggplot(UIDesigners, aes(x=UIDesigners$stastic$work_total, y=UIDesigners$stastic$
 # 院校和人气值的关系
 subset(UIDesigners, stastic$hot>1000000 & educated != NaN, select = c('educated', 'username'))
 
-
 wk = worker()
+
 sign_txt <- as.character(subset(UIDesigners, sign != NaN, select = "sign"))
 
 sign_slice_words <- wk[sign_txt]
@@ -113,20 +115,6 @@ sign_slice_words <- table(sign_slice_words)
 
 sign_slice_words <- sort(sign_slice_words, decreasing = TRUE)[1:100]
 
-
-library(wordcloud)
-
-bmp("aa.jpg", width = 500, height = 500)
-par(bg = "black")
-
-wordcloud(names(sign_slice_words), sign_slice_words, colors = rainbow(100), random.order=F)
-dev.off()
-
-length(sign_slice_words)
-
-
-
-
-
+wordcloud2(sign_slice_words, color='random-light', backgroundColor = 'black', fontFamily = "PingFang SC")
 
 
